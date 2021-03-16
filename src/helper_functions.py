@@ -51,8 +51,15 @@ def plot_state_sales(df, state):
     
     y = state_df['item_sales'].resample('MS').mean()
     
-    fig, ax = plt.subplots(num_stores+1, figsize=(12, 18))
-    y.plot(title=f'{state} Monthly Sales', ax=ax[0])
+    r = random.random() 
+    b = random.random() 
+    g = random.random() 
+  
+    color = (r, g, b) 
+    
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.set_title(f'{state} Monthly Sales')
+    ax.plot(y, color=color, label=f'{state}')
     
     for i, store in enumerate(store_ids):
         store_df = original_df[original_df.store_id == store].copy()
@@ -66,8 +73,44 @@ def plot_state_sales(df, state):
   
         color = (r, g, b) 
         
-        y.plot(title=f'{store} Monthly Sales', ax=ax[i+1], color=color);
+        ax.plot(y, color=color, label=f'{store}')
+    
+    ax.legend();
+    
+def compare_state_sales(df):
+    '''
+    Plot sales per month for each state
+    
+    PARAMETERS
+    ----------
+        df: dataframe
+    
+    RETURNS
+    -------
+        plots sales by month
+    '''
+    num_states = len(np.unique(df.state_id))
+        
+    fig, ax = plt.subplots(figsize=(12, 6))
+        
+    for i, state in enumerate(np.unique(df.state_id)):
+        state_df = df[df.state_id == state].copy()
+        state_df['date'] = pd.to_datetime(state_df['date'])
+        state_df = state_df.groupby('date')['item_sales'].sum().reset_index()
+        state_df = state_df.set_index('date')
 
+        y = state_df['item_sales'].resample('MS').mean()
+
+        r = random.random() 
+        b = random.random() 
+        g = random.random() 
+        color = (r, g, b) 
+
+        ax.plot(y, color=color, label=f'{state}')
+            
+    ax.set_title('Monthly Sales By State')
+    ax.legend();
+    
 def monthly_item_sales(df):
     '''
     Takes case sensitive user inputs to eventually display item_ids.
