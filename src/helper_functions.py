@@ -71,6 +71,7 @@ def plot_state_sales(df, state):
 def monthly_item_sales(df):
     '''
     Takes case sensitive user inputs to eventually display item_ids.
+    If user specifies a department, function will plot department monthly sales.
     Once user specifies an item_id, plots monthly sales.
     
     PARAMETERS
@@ -102,33 +103,52 @@ def monthly_item_sales(df):
         category = input(f'Choose a department category to view items available\n{cat_ids} \n')
     
     cat_df = store_df[store_df.cat_id==category].copy()
-    items = np.unique(cat_df.item_id)
     
-    for i, item in enumerate(items):
-        print(item)
-        if (i != 0) & (i % 5 == 0):
-            decision = input('Display more items? Yes or No. \n')
-            if decision=='Yes': pass
-            elif decision=='No': break
-            else: break
+    yay_or_nay = input(f'Plot department sales? Yes or No. \n')
     
-    item = input('Choose an item: \n')
+    if yay_or_nay == 'Yes':
+        cat_df['date'] = pd.to_datetime(cat_df['date'])
+        cat_df = cat_df.groupby('date')['item_sales'].sum().reset_index()
+        cat_df = cat_df.set_index('date')
     
-    while item is None:
+        y = cat_df['item_sales'].resample('MS').mean()
+    
+        r = random.random() 
+        b = random.random() 
+        g = random.random() 
+        color = (r, g, b) 
+    
+        fig, ax = plt.subplots(figsize=(12, 6))
+        y.plot(title=f'{store} {category} Monthly Sales', color=color);
+    
+    else:
+        items = np.unique(cat_df.item_id)
+
+        for i, item in enumerate(items):
+            print(item)
+            if (i != 0) & (i % 5 == 0):
+                decision = input('Display more items? Yes or No. \n')
+                if decision=='Yes': pass
+                elif decision=='No': break
+                else: break
+
         item = input('Choose an item: \n')
-    
-    item_df = cat_df[cat_df.item_id==item].copy()
-    
-    item_df['date'] = pd.to_datetime(item_df['date'])
-    item_df = item_df.groupby('date')['item_sales'].sum().reset_index()
-    item_df = item_df.set_index('date')
-    
-    y = item_df['item_sales'].resample('MS').mean()
-    
-    r = random.random() 
-    b = random.random() 
-    g = random.random() 
-    color = (r, g, b) 
-    
-    fig, ax = plt.subplots(figsize=(12, 6))
-    y.plot(title=f'{store} {item} Monthly Sales', color=color);
+
+        while item is None:
+            item = input('Choose an item: \n')
+
+        item_df = cat_df[cat_df.item_id==item].copy()
+
+        item_df['date'] = pd.to_datetime(item_df['date'])
+        item_df = item_df.groupby('date')['item_sales'].sum().reset_index()
+        item_df = item_df.set_index('date')
+
+        y = item_df['item_sales'].resample('MS').mean()
+
+        r = random.random() 
+        b = random.random() 
+        g = random.random() 
+        color = (r, g, b) 
+
+        fig, ax = plt.subplots(figsize=(12, 6))
+        y.plot(title=f'{store} {item} Monthly Sales', color=color);
