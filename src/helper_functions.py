@@ -2,8 +2,10 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import figure
+import seaborn as sns
 import plotly.express as px
 import random
+import datetime
 
 def plot_missing_values(df, df_name):
     '''
@@ -195,3 +197,39 @@ def monthly_item_sales(df):
 
         fig, ax = plt.subplots(figsize=(12, 6))
         y.plot(title=f'{store} {item} Monthly Sales', color=color);
+        
+def monthly_sales(data):
+    '''
+    Function returns a df with two columns:
+        date: datetime
+        sales: total item sales (not $)
+    '''
+    monthly_data = data.copy()
+    monthly_data.date = pd.to_datetime(monthly_data.date)
+    monthly_data = monthly_data.groupby('date')['item_sales'].sum().reset_index()
+    
+    return monthly_data
+
+def time_plot(data, x_col, y_col, title):
+    first = data.set_index('date')
+    
+    y = pd.DataFrame(first[y_col].resample('MS').mean())
+    
+    r = random.random() 
+    b = random.random() 
+    g = random.random() 
+  
+    color = (r, g, b) 
+    
+    fig, ax = plt.subplots(figsize=(12, 6))
+    ax.plot(y, color=color, label='Total Sales')
+    
+    second = data.groupby(data.date.dt.year)[y_col].mean().reset_index()
+    second.date = pd.to_datetime(second.date, format='%Y')
+    sns.lineplot((second.date + datetime.timedelta(6*365/12)), y_col, data=second, ax=ax, color='red', label='Mean Sales')   
+    
+    ax.set(xlabel = "Date",
+           ylabel = "Sales",
+           title = title)
+    
+    sns.despine()
