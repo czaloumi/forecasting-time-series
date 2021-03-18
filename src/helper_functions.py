@@ -272,5 +272,40 @@ def correlation_plots(data, lags=None):
 def get_diff(data, state):
     data['sales_diff'] = data.item_sales.diff()
     data = data.dropna()
-    data.to_csv(f'../data/{state}_stationary_df.csv')
     return data
+
+def clean_df(df, state):
+    '''
+    Simplifies problem from daily to monthly
+    '''
+    df = df.resample('MS').mean().copy()
+    df = df.reset_index()
+    return(get_diff(df, state))
+
+def generate_supervised(df, state, window_width):
+    '''
+    Creates a dataframe for transformation from time series to supervised.
+    
+    PARAMETERS
+    ----------
+        df: dataframe to add lag columns to
+        state: string, 'ca', 'tx', or 'wi'
+        window_width: int for seasonal aspect (365 for days, 12 for months)
+    
+    RETURNS
+    -------
+        dataframe for supervised learning
+    '''
+    supervised_df = df.copy()
+    
+    #create column for each lag
+    for i in range(1,window_width+1):
+        col_name = 'lag_' + str(i)
+        supervised_df[col_name] = supervised_df['sales_diff'].shift(i)
+    
+    #drop null values
+    supervised_df = supervised_df.dropna().reset_index(drop=True)
+    
+    supervised_df.to_csv(f'../data/{state}_supervised.csv', index=False)
+    
+    return supervised_df
