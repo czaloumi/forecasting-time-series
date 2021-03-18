@@ -6,6 +6,14 @@ import seaborn as sns
 import plotly.express as px
 import random
 import datetime
+import statsmodels.tsa.api as smt
+
+def gen_random_color():
+    r = random.random() 
+    b = random.random() 
+    g = random.random() 
+  
+    return (r, g, b)
 
 def plot_missing_values(df, df_name):
     '''
@@ -53,15 +61,9 @@ def plot_state_sales(df, state):
     
     y = state_df['item_sales'].resample('MS').mean()
     
-    r = random.random() 
-    b = random.random() 
-    g = random.random() 
-  
-    color = (r, g, b) 
-    
     fig, ax = plt.subplots(figsize=(12, 6))
     ax.set_title(f'{state} Monthly Sales')
-    ax.plot(y, color=color, label=f'{state}')
+    ax.plot(y, color=gen_random_color(), label=f'{state}')
     
     for i, store in enumerate(store_ids):
         store_df = original_df[original_df.store_id == store].copy()
@@ -69,13 +71,7 @@ def plot_state_sales(df, state):
         store_df = store_df.set_index('date')
         y = store_df['item_sales'].resample('MS').mean()
         
-        r = random.random() 
-        b = random.random() 
-        g = random.random() 
-  
-        color = (r, g, b) 
-        
-        ax.plot(y, color=color, label=f'{store}')
+        ax.plot(y, color=gen_random_color(), label=f'{store}')
     
     ax.legend();
     
@@ -103,12 +99,7 @@ def compare_state_sales(df):
 
         y = state_df['item_sales'].resample('MS').mean()
 
-        r = random.random() 
-        b = random.random() 
-        g = random.random() 
-        color = (r, g, b) 
-
-        ax.plot(y, color=color, label=f'{state}')
+        ax.plot(y, color=gen_random_color(), label=f'{state}')
             
     ax.set_title('Monthly Sales By State')
     ax.legend();
@@ -158,13 +149,8 @@ def monthly_item_sales(df):
     
         y = cat_df['item_sales'].resample('MS').mean()
     
-        r = random.random() 
-        b = random.random() 
-        g = random.random() 
-        color = (r, g, b) 
-    
         fig, ax = plt.subplots(figsize=(12, 6))
-        y.plot(title=f'{store} {category} Monthly Sales', color=color);
+        y.plot(title=f'{store} {category} Monthly Sales', color=gen_random_color());
     
     else:
         items = np.unique(cat_df.item_id)
@@ -190,13 +176,8 @@ def monthly_item_sales(df):
 
         y = item_df['item_sales'].resample('MS').mean()
 
-        r = random.random() 
-        b = random.random() 
-        g = random.random() 
-        color = (r, g, b) 
-
         fig, ax = plt.subplots(figsize=(12, 6))
-        y.plot(title=f'{store} {item} Monthly Sales', color=color);
+        y.plot(title=f'{store} {item} Monthly Sales', color=gen_random_color());
         
 def monthly_sales(data):
     '''
@@ -211,18 +192,27 @@ def monthly_sales(data):
     return monthly_data
 
 def time_plot(data, x_col, y_col, title):
+    '''
+    Plots monthly sales with average for comparison.
+    Users can view if the data is stationary or not based on average.
+    
+    PARAMETERS
+    ----------
+        data: dataframe
+        x_col: datetime
+        y_col: value to observe
+        title: string
+        
+    RETURNS
+    -------
+        plot
+    '''
     first = data.set_index('date')
     
     y = pd.DataFrame(first[y_col].resample('MS').mean())
     
-    r = random.random() 
-    b = random.random() 
-    g = random.random() 
-  
-    color = (r, g, b) 
-    
     fig, ax = plt.subplots(figsize=(12, 6))
-    ax.plot(y, color=color, label='Total Sales')
+    ax.plot(y, color=gen_random_color(), label='Total Sales')
     
     second = data.groupby(data.date.dt.year)[y_col].mean().reset_index()
     second.date = pd.to_datetime(second.date, format='%Y')
@@ -233,3 +223,54 @@ def time_plot(data, x_col, y_col, title):
            title = title)
     
     sns.despine()
+    
+def plot_shared_yscales(axs, x, ys, titles):
+    ymiddles =  [ (y.max()+y.min())/2 for y in ys ]
+    yrange = np.max([ (y.max()-y.min())/2 for y in ys ])
+    for ax, y, title, ymiddle in zip(axs, ys, titles, ymiddles):
+        ax.plot(x, y)
+        ax.set_title(title)
+        ax.set_ylim((ymiddle-yrange, ymiddle+yrange))
+        
+def plot_seasonal_decomposition(axs, series, sd):
+    plot_shared_yscales(axs,
+                        series.index,
+                        [series.item_sales, sd.trend, sd.seasonal, sd.resid],
+                        ["Raw Series", 
+                         "Trend Component $T_t$", 
+                         "Seasonal Component $S_t$",
+                         "Residual Component $R_t$"])
+    
+def correlation_plots(data, lags=None):
+    '''
+    Plots stationary series, autocorrelation, and partial autocorrelation.
+    
+    PARAMETERS
+    ----------
+        data: df
+    
+    RETURNS
+    -------
+        3 subplot figure
+    '''
+    dt_data = data.set_index('date').drop('item_sales', axis=1)
+    dt_data.dropna(axis=0)
+    
+    y = pd.DataFrame(dt_data['sales_diff'].resample('MS').mean())
+    
+    layout = (1, 3)
+    raw  = plt.subplot2grid(layout, (0, 0))
+    acf  = plt.subplot2grid(layout, (0, 1))
+    pacf = plt.subplot2grid(layout, (0, 2))
+    
+    y.plot(ax=raw, figsize=(12, 6), color=gen_random_color())
+    smt.graphics.plot_acf(dt_data, lags=lags, ax=acf, color=gen_random_color())
+    smt.graphics.plot_pacf(dt_data, lags=lags, ax=pacf, color=gen_random_color())
+    sns.despine()
+    plt.tight_layout()
+
+def get_diff(data, state):
+    data['sales_diff'] = data.item_sales.diff()
+    data = data.dropna()
+    data.to_csv(f'../data/{state}_stationary_df.csv')
+    return data
