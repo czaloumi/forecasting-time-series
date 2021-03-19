@@ -18,10 +18,15 @@ This project helped me better understand time series and forecasting problems.
 
 # Exploration
 ---
-Original data can be found at the kaggle link to the competition above. Data contains item sales by state, which can be drilled down to each state's various stores, departments, and items.
+Original data can be found at the kaggle link to the competition above. Data contains item sales by state.
 
  <p align="center">
  <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/monthly_sales_state.png" width="75%" height="75%"/>
+ </p>
+
+For exploring the data, users can find functions in `src/helper_functions.py` and example usage in `src/0_eda.ipynb`. Examples below for drilling down to each state's various stores, departments, and items.
+
+<p>
  <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/ca_monthly_sales.png" width="50%" height="50%"/>
  <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/tx_monthly_sales.png" width="50%" height="50%"/>
  <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/wi_monthly_sales.png" width="50%" height="50%"/>
