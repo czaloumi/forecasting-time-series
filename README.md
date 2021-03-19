@@ -21,8 +21,8 @@ This project helped me better understand time series and forecasting problems.
 Original data can be found at the kaggle link to the competition above. Data contains item sales by state, which can be drilled down to each state's various stores, departments, and items.
 
  <p align="center">
- <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/monthly_sales_state.png" width="75%" height="75%"/>
- <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/ca_monthly_sales.png" width="75%" height="75%"/>
+ <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/monthly_sales_state.png" width="75%" height="75%"/><img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/ca_monthly_sales.png" width="75%" height="75%"/>
+ 
  <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/tx_monthly_sales.png" width="75%" height="75%"/>
  <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/wi_monthly_sales.png" width="75%" height="75%"/>
  <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/dept_ex_sales.png" width="75%" height="75%"/>
