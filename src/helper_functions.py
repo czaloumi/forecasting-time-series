@@ -8,6 +8,10 @@ import random
 import datetime
 import statsmodels.tsa.api as smt
 
+#####################################################
+##               USED IN 0_eda.ipynb               ##
+#####################################################
+
 def gen_random_color():
     r = random.random() 
     b = random.random() 
@@ -309,3 +313,45 @@ def generate_supervised(df, state, window_width):
     supervised_df.to_csv(f'../data/{state}_supervised.csv', index=False)
     
     return supervised_df
+
+#####################################################
+##            USED IN 1_regression.ipynb           ##
+#####################################################
+
+def train_test_spli(df):
+    '''
+    Returns train and test/holdout data ready for model training and evaluation.
+    Different than regular train_test_split for time series specific problems.
+        Cannot be randomized bc data is sequential.
+    
+    PARAMETERS
+    ----------
+        df: dataframe with monthly entries
+    
+    RETURNS
+        train: series, training dataframe
+        test: series, last 12 months for holdout/testing
+    '''
+    df = df.drop(['date', 'item_sales'],axis=1)
+    train, test = df[0:-12].values, df[-12:].values
+    
+    return train, test
+
+def scale_data(train_set, test_set):
+    # apply Min Max Scaler
+    scaler = MinMaxScaler(feature_range=(-1, 1))
+    scaler = scaler.fit(train_set)
+    
+    # reshape training set
+    train_set = train_set.reshape(train_set.shape[0], train_set.shape[1])
+    train_set_scaled = scaler.transform(train_set)
+    
+    # reshape test set
+    test_set = test_set.reshape(test_set.shape[0], test_set.shape[1])
+    test_set_scaled = scaler.transform(test_set)
+    
+    # y is the first column `sales_diff`
+    X_train, y_train = train_set_scaled[:, 1:], train_set_scaled[:, 0:1].ravel()
+    X_test, y_test = test_set_scaled[:, 1:], test_set_scaled[:, 0:1].ravel()
+    
+    return X_train, y_train, X_test, y_test, scaler
