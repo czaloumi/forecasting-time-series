@@ -26,10 +26,10 @@ Original data can be found at the kaggle link to the competition above. Data con
 
 For exploring the data, users can find functions in `src/helper_functions.py` and example usage in `src/0_eda.ipynb`. Examples below for drilling down to each state's various stores, departments, and items.
 
-<p>
- <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/ca_monthly_sales.png" width="50%" height="50%"/>
- <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/tx_monthly_sales.png" width="50%" height="50%"/>
- <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/wi_monthly_sales.png" width="50%" height="50%"/>
- <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/dept_ex_sales.png" width="50%" height="50%"/>
- <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/item_ex_sales.png" width="50%" height="50%"/>
+<p align="center">
+ <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/ca_monthly_sales.png" width="75%" height="75%"/>
+ <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/tx_monthly_sales.png" width="75%" height="75%"/>
+ <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/wi_monthly_sales.png" width="75%" height="75%"/>
+ <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/dept_ex_sales.png" width="75%" height="75%"/>
+ <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/item_ex_sales.png" width="75%" height="75%"/>
  </p>
