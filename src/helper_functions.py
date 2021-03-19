@@ -318,6 +318,12 @@ def generate_supervised(df, state, window_width):
 ##            USED IN 1_regression.ipynb           ##
 #####################################################
 
+from sklearn.preprocessing import MinMaxScaler
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.ensemble import RandomForestRegressor
+from xgboost.sklearn import XGBRegressor
+
 def train_test_spli(df):
     '''
     Returns train and test/holdout data ready for model training and evaluation.
@@ -377,3 +383,96 @@ def load_data(state):
     subset.date = pd.to_datetime(subset.date)
     
     return subset
+
+def plot_results(state, model, original_df, results_df):
+    '''
+    Plots original item_sales with predicted sales
+    '''
+    fig, ax = plt.subplots(figsize=(12, 6))
+    sns.lineplot(original_df.date, original_df.item_sales, data=original_df, label='Original Data', ax=ax, color=gen_random_color())
+    sns.lineplot(results_df.date, results_df.pred_value, data=results_df, label='Predictions', ax=ax, color=gen_random_color());
+    ax.set(xlabel = "Date", ylabel = "Sales", title = f"{model.__class__.__name__} {state} Sales Forecasting Prediction")
+    plt.savefig(f'../images/{state}_{model.__class__.__name__}_forecast.png')
+    
+def scoring(state, model, original_df, results_df):
+    '''
+    Prints RMSE & R2 scores, saves to csv
+    '''
+    model_scores = {}
+
+    rmse = np.sqrt(mean_squared_error(original_df.item_sales[-12:], results_df.pred_value[-12:]))
+    r2 = r2_score(original_df.item_sales[-12:], results_df.pred_value[-12:])
+    
+    scores = pd.read_csv('../data/model_scores.csv')
+    
+    scores[f'{model.__class__.__name__}_{state}'] = [rmse, r2]
+
+    print(f"RMSE: {rmse}")
+    print(f"R2 Score: {r2}")
+    pd.DataFrame(scores).to_csv(f'../data/model_scores.csv', index=False)
+
+def model(state, regressor):
+    '''
+    Loads data, performs a train test split then scales each split.
+    Trains a regressor, makes predicted sales difference,
+    adds sales difference to actual item sales to get 
+    month's forecasted sales.
+    
+    Lastly, plots model results and saves RMSE & R2 scores.
+    
+    PARAMETERS
+    ----------
+        state: 'ca', 'tx', 'wi'
+        regressor: untrained model object
+        scaler: fit scaler object
+    
+    RETURNS
+    -------
+        plots forecasted prediction on actual item_sales values
+        saves model scores to csv in data folder
+    '''
+    state_df = pd.read_csv(f'../data/{state}_supervised.csv')
+    train, test = train_test_spli(state_df)
+    X_train, y_train, X_test, y_test, scaler_object = scale_data(train, test)
+    
+    model = regressor
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    # y_pred = 12 predicted, scaled, sales_differ values
+    # y_pred.shape = (12,)
+    # reshape y_pred and X_test to concatenate
+    y_pred = y_pred.reshape(y_pred.shape[0], 1, 1)
+    X_test = X_test.reshape(X_test.shape[0], 1, X_test.shape[1])
+    
+    pred_test_set = []
+    for i in range(0, len(y_pred)):
+        pred_test_set.append(np.concatenate([y_pred[i], X_test[i]], axis=1))
+        
+    # pred_test_set.shape = (12, 1, 13)
+    # reshape predictions back to (12, 13)
+    pred_test_set = np.array(pred_test_set)
+    pred_test_set = pred_test_set.reshape(pred_test_set.shape[0], pred_test_set.shape[2])
+    
+    pred_test_set_inverted = scaler_object.inverse_transform(pred_test_set)
+    
+    # load original dataframe to add predicted sales_differ to previous
+    # month values to get actual item sales prediction
+    df = load_data(state)
+    
+    results = []
+    dates = list(df[-13:].date)
+    item_sales = list(df[-13:].item_sales)
+    
+    # predicting the nth difference in item sales:
+    # need to add the prediction to the month previous sales
+    for i in range(0, len(pred_test_set_inverted)):
+        result_dict = {}
+        result_dict['pred_value'] = int(pred_test_set_inverted[i][0] + item_sales[i])
+        result_dict['date'] = dates[i + 1]
+        results.append(result_dict)
+    
+    results_df = pd.DataFrame(results)
+    
+    plot_results(state, model, df, results_df)
+    
+    scoring(state, model, df, results_df)
