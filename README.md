@@ -22,10 +22,9 @@ Original data can be found at the kaggle link to the competition above. Data con
 
  <p align="center">
  <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/monthly_sales_state.png" width="75%" height="75%"/>
+ <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/ca_monthly_sales.png" width="75%" height="75%"/>
+ <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/tx_monthly_sales.png" width="75%" height="75%"/>
+ <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/wi_monthly_sales.png" width="75%" height="75%"/>
+ <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/dept_ex_sales.png" width="75%" height="75%"/>
+ <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/item_ex_sales.png" width="75%" height="75%"/>
  </p>
-
-![CA Sales](images/ca_monthly_sales.png)
-![TX Sales](images/tx_monthly_sales.png)
-![WI Sales](images/wi_monthly_sales.png)
-![Dept Example](images/dept_ex_sales.png)
-![Item Example](images/item_ex_sales.png)
