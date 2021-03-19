@@ -355,3 +355,25 @@ def scale_data(train_set, test_set):
     X_test, y_test = test_set_scaled[:, 1:], test_set_scaled[:, 0:1].ravel()
     
     return X_train, y_train, X_test, y_test, scaler
+
+def load_data(state):
+    '''
+    Loads and cleans original dataframes for plotting.
+    
+    PARAMETERS
+    ----------
+        state: string, 'ca', 'tx', 'wi'
+        
+    RETURNS
+    -------
+        dataframe with date and item sales only
+    '''
+    df = pd.read_csv(f'../data/{state}_supervised.csv')
+    subset = df[['date', 'item_sales']].copy()
+    
+    # just some cleaning for plots
+    subset.date = subset.date.apply(lambda x: str(x)[:-3])
+    subset = subset.groupby('date')['item_sales'].sum().reset_index()
+    subset.date = pd.to_datetime(subset.date)
+    
+    return subset
