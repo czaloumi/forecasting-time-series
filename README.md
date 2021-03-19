@@ -38,6 +38,6 @@ For exploring the data, users can find functions in `src/helper_functions.py` an
 ---
 Compared three regression models out of box on forecasting California's monthly sales. Linear Regression outperformed both Random Forest and Gradient Boosting.
  <p align="center">
- <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/oob_regr_comparison.png" width="75%" height="75%"/>
- <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/ca_LinearRegression_forecast.png" width="75%" height="75%"/>
+ <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/model_outputs/ca_oob_regr_comparison.png" width="75%" height="75%"/>
+ <img src="https://github.com/czaloumi/forecasting-time-series/blob/main/images/model_outputs/ca_LinearRegression_forecast.png" width="75%" height="75%"/>
  </p>
