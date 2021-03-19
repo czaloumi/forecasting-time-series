@@ -20,4 +20,9 @@ This project helped me better understand time series and forecasting problems.
 ---
 Original data can be found at the kaggle link to the competition above. Data contains item sales by state, which can be drilled down to each state's various stores, departments, and items.
 
-![title](images/monthly_sales_state.png)
+![State Comparison](images/monthly_sales_state.png)
+![CA Sales](images/ca_monthly_sales.png)
+![TX Sales](images/tx_monthly_sales.png)
+![WI Sales](images/wi_monthly_sales.png)
+![Dept Example](images/dept_ex_sales.png)
+![Item Example](images/item_ex_sales.png)
