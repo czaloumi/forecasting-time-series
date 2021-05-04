@@ -2,15 +2,23 @@ import pandas as pd
 import numpy as np
 import random
 import datetime
+import requests
 from helper_functions import *
 
 def load_separate_datasets():
+    '''
+    Download data from: https://www.kaggle.com/c/m5-forecasting-accuracy/data
+    Move into data folder.
+    '''
     train_sales = pd.read_csv("../data/sales_train_evaluation.csv")
     calendar = pd.read_csv("../data/calendar.csv")
     sell_prices = pd.read_csv("../data/sell_prices.csv")
     return train_sales, calendar, sell_prices
 
 def clean_melt_and_merge(train_sales, calendar, sell_prices):
+    '''
+    Minor cleaning, melts train_sales, and merges all 3.
+    '''
     to_drop = ['event_name_1', 'event_type_1', 'event_name_2', 'event_type_2']
     calendar.drop(to_drop, axis=1, inplace=True)
 
