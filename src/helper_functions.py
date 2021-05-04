@@ -192,6 +192,7 @@ def monthly_sales(data):
     monthly_data = data.copy()
     monthly_data.date = pd.to_datetime(monthly_data.date)
     monthly_data = monthly_data.groupby('date')['item_sales'].sum().reset_index()
+    monthly_data = monthly_data.resample('M', on='date').mean()
     
     return monthly_data
 
@@ -257,24 +258,24 @@ def correlation_plots(data, lags=None):
     -------
         3 subplot figure
     '''
-    dt_data = data.set_index('date').drop('item_sales', axis=1)
-    dt_data.dropna(axis=0)
-    
-    y = pd.DataFrame(dt_data['sales_diff'].resample('MS').mean())
-    
     layout = (1, 3)
     raw  = plt.subplot2grid(layout, (0, 0))
     acf  = plt.subplot2grid(layout, (0, 1))
     pacf = plt.subplot2grid(layout, (0, 2))
     
-    y.plot(ax=raw, figsize=(12, 6), color=gen_random_color())
-    smt.graphics.plot_acf(dt_data, lags=lags, ax=acf, color=gen_random_color())
-    smt.graphics.plot_pacf(dt_data, lags=lags, ax=pacf, color=gen_random_color())
+    data.plot(ax=raw, figsize=(12, 6), color=gen_random_color())
+    smt.graphics.plot_acf(data, lags=lags, ax=acf, color=gen_random_color())
+    smt.graphics.plot_pacf(data, lags=lags, ax=pacf, color=gen_random_color())
     sns.despine()
     plt.tight_layout()
 
 def get_diff(data, state):
     data['sales_diff'] = data.item_sales.diff()
+    data = data.dropna()
+    return data
+
+def get_seasonal_diff(data):
+    data['sales_diff'] = data.item_sales.diff().diff(periods=12)
     data = data.dropna()
     return data
 
@@ -338,7 +339,6 @@ def train_test_spli(df):
         train: series, training dataframe
         test: series, last 12 months for holdout/testing
     '''
-    df = df.drop(['date', 'item_sales'],axis=1)
     train, test = df[0:-12].values, df[-12:].values
     
     return train, test
