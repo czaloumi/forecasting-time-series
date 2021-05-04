@@ -339,7 +339,7 @@ def train_test_spli(df):
         train: series, training dataframe
         test: series, last 12 months for holdout/testing
     '''
-    train, test = df[0:-12].values, df[-12:].values
+    train, test = df[0:-12], df[-12:]
     
     return train, test
 
